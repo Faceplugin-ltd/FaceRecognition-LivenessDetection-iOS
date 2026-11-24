@@ -7,7 +7,7 @@
 #### 🛟 Help Center - [Here](https://doc.faceplugin.com)
 #### 🐳 Docker Hub - [Here](https://hub.docker.com/r/faceplugin/face-recognition)
 
-# FacePlugin Face Recognition + Liveness Detection — iOS (Fully On-Premise)
+# FacePlugin Face Recognition + 1:N Identification + Liveness Detection — iOS (Fully On-Premise)
 
 Jump: [Quick start](#quick-start) · [Get the library](#get-the-library-facerecognitionsdkxcframework) · [Run the demo](#run-the-demo) · [SDK License](#sdk-license) · [Setup on your own app](#setup-on-your-own-app) · [About SDK](#about-sdk)
 
@@ -20,7 +20,7 @@ Jump: [Quick start](#quick-start) · [Get the library](#get-the-library-facereco
 
 ## Introduction
 
-FacePlugin **Face Recognition + Liveness Detection for iOS** runs face recognition and passive liveness entirely on the device. Nothing is sent to a FacePlugin server, which is what banking, access control, and privacy-first identity apps need.
+FacePlugin **Face Recognition + Liveness Detection for iOS** runs face recognition and passive liveness entirely on the device. Nothing is sent to a FacePlugin server, which is what banking, access control, and privacy-first identity apps need. Its headline capability is **1:N identification**: enroll your people once, then ask *who is this?* of a camera frame or a photo and get a ranked candidate list back — searched against a gallery that lives on the phone, so no face ever leaves it.
 
 This repository is the whole product: the **engine** (`facerecognitionsdk.xcframework`), two **Swift libraries** you add to your project — `FaceRecognitionKit` and `FaceRecognitionCapture` — and a **demo app** built from those same libraries, so what you read here is what the demo runs.
 
@@ -28,11 +28,11 @@ This repository is the whole product: the **engine** (`facerecognitionsdk.xcfram
 
 | Feature | API |
 | ------- | --- |
+| **1:N identification** against the on-device gallery | `FaceGallery.shared.identify` |
 | Face detection (bounding box, landmarks, pose, attributes) | `FaceDetector.detect` |
-| passive liveness (anti-spoofing) | `face.liveness` · `FaceLimits.isLive` |
+| Passive liveness (anti-spoofing) | `face.liveness` · `FaceLimits.isLive` |
 | Face image quality | `face.faceQuality` |
 | Face template extraction and similarity | `FaceDetector.template` · `FaceDetector.similarity` |
-| **1:N identification** against the on-device gallery | `FaceGallery.shared.identify` |
 | Enrollment with duplicate check | `FaceGallery.shared.enroll` |
 | Guided camera capture (oval overlay, live coaching) | `FaceRecognitionCapture` |
 | License and engine lifecycle | `FaceEngine.shared.start` · `licenseStatus` · `machineCode` |
@@ -137,28 +137,35 @@ If the app crashes at launch in dyld (`SIGABRT`), Xcode may have embedded a smal
 
 ## SDK License
 
-Licenses are **offline** and bound to your bundle identifier.
+The demo runs as it is: a FacePlugin key for `com.faceplugin.facerecognition.app` is already in the code. Licenses are **offline** — once activated, nothing phones home — and each one is bound to your bundle identifier, so your own app needs its own key.
 
-The demo app already includes a valid key for `com.faceplugin.facerecognition.app`. You only need a new key when you use a different bundle id.
+### Set your SDK license
 
-### How to get a license
+| What | File | What to find |
+| ---- | ---- | ------------ |
+| The key itself | [`AppSettings.swift`](FaceRecognitionSDK/Shell/Data/AppSettings.swift) | `enum BuiltInLicense`, the `key` constant |
+| Where it is used | [`AppDelegate.swift`](FaceRecognitionSDK/App/AppDelegate.swift) | `FaceEngine.shared.start(license: BuiltInLicense.key)` |
+| The id it is bound to | Xcode target → Signing & Capabilities | Bundle Identifier |
 
-The code below shows how the license is used:
+Find this, and put your key in place of the demo one:
 
-[https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/blob/main/FaceRecognitionSDK/Shell/Data/AppSettings.swift#L112-L116](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/blob/main/FaceRecognitionSDK/Shell/Data/AppSettings.swift#L112-L116)
+```swift
+static let key =
+    "FP1.RlBMMQMAAQBRd7YXphKTsuScCyMJAgAA…"
+```
 
-[https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/blob/main/FaceRecognitionSDK/App/AppDelegate.swift#L11-L14](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/blob/main/FaceRecognitionSDK/App/AppDelegate.swift#L11-L14)
+Rebuild and run. The Settings tab shows the license state, and the engine reports `notActivated`, `licenseInvalid` or `licenseExpired` when a key does not fit the app.
 
-Please [contact us](#contact) to get a license for **your own app**. Send us the bundle id you will ship, and `FaceEngine.shared.machineCode()` if we ask for it.
+### How to get a key
+
+[Contact us](#contact) with the id you will ship. If we ask for a machine code, `FaceEngine.shared.machineCode()` returns it. After activation, `FaceEngine.shared.licenseStatus()` reports what the key unlocks.
 
 ### License capabilities (Recognition + Liveness)
-
-After activation, `FaceEngine.shared.licenseStatus()` reports what the key unlocks. Settings shows the same summary.
 
 | Capability | Meaning |
 | ---------- | ------- |
 | **Recognition** | Detection, attributes, quality, templates, 1:1 similarity, and 1:N identification |
-| **Liveness** | passive anti-spoofing on camera frames and stills |
+| **Liveness** | Passive anti-spoofing on camera frames and stills |
 
 ## Setup on your own app
 
