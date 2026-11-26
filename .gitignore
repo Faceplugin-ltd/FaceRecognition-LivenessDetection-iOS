@@ -28,7 +28,7 @@ activation.dat
 FP1.*
 *.fp1
 
-# --- Runtime (export from Face-Recognition-LivenessDetection-iOS-LX-SDK) ---
+# --- Runtime (engine frameworks, not tracked) ---
 *.fpk
 *.pack
 *.db
