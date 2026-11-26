@@ -74,4 +74,4 @@ swift package compute-checksum facerecognitionsdk.xcframework.zip
 
 Put that checksum and the version in `engineVersion` and `engineChecksum` at the top of
 `Package.swift`, commit, and tag. Customers then add the repository URL in Xcode and pick the tag,
-and SPM fetches the engine for them. That is the iOS counterpart of publishing to Maven Central.
+and SPM fetches the engine for them.
