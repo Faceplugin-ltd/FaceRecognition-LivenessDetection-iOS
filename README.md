@@ -9,12 +9,12 @@
 
 # FacePlugin Face Recognition + 1:N Identification + Liveness Detection — iOS (Fully On-Premise)
 
-Jump: [Quick start](#quick-start) · [Get the library](#get-the-library-facerecognitionsdkxcframework) · [Run the demo](#run-the-demo) · [SDK License](#sdk-license) · [Setup on your own app](#setup-on-your-own-app) · [About SDK](#about-sdk)
+Jump: [Quick start](#quick-start) · [Get the library](#get-the-library-runtimezip) · [Run the demo](#run-the-demo) · [SDK License](#sdk-license) · [Setup on your own app](#setup-on-your-own-app) · [About SDK](#about-sdk)
 
 ## Quick start
 
 - [ ] Clone [FaceRecognition-LivenessDetection-iOS](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS)
-- [ ] Download `facerecognitionsdk.xcframework.zip` from [Releases](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/releases/tag/latest) — [Get the library](#get-the-library-facerecognitionsdkxcframework)
+- [ ] Download **`runtime.zip`** from [Releases](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/releases/tag/latest) and extract it — [Get the library](#get-the-library-runtimezip)
 - [ ] Open `FaceRecognitionSDK.xcodeproj` in Xcode, set your signing Team, and run on a **physical** iPhone
 - [ ] The demo ships with a license key for `com.faceplugin.facerecognition.app`; [contact us](#contact) for your own bundle id
 
@@ -22,7 +22,7 @@ Jump: [Quick start](#quick-start) · [Get the library](#get-the-library-facereco
 
 FacePlugin **Face Recognition + Liveness Detection for iOS** runs face recognition and passive liveness entirely on the device. Nothing is sent to a FacePlugin server, which is what banking, access control, and privacy-first identity apps need. Its headline capability is **1:N identification**: enroll your people once, then ask *who is this?* of a camera frame or a photo and get a ranked candidate list back — searched against a gallery that lives on the phone, so no face ever leaves it.
 
-This repository is the whole product: the **engine** (`facerecognitionsdk.xcframework`), two **Swift libraries** you add to your project — `FaceRecognitionKit` and `FaceRecognitionCapture` — and a **demo app** built from those same libraries, so what you read here is what the demo runs.
+This repository is the whole product: the **engine pack** from `runtime.zip` (`facerecognitionsdk.framework` plus vendor xcframeworks), two **Swift libraries** you add to your project — `FaceRecognitionKit` and `FaceRecognitionCapture` — and a **demo app** built from those same libraries, so what you read here is what the demo runs.
 
 ### Main Functionalities
 
@@ -61,7 +61,7 @@ This repository is the whole product: the **engine** (`facerecognitionsdk.xcfram
 | Step | What you need |
 | ---- | ------------- |
 | 1 | macOS with Xcode 15 or newer, and an Apple Developer Team for signing |
-| 2 | The engine xcframework from the release page — see [Get the library](#get-the-library-facerecognitionsdkxcframework) |
+| 2 | `runtime.zip` from the release page — see [Get the library](#get-the-library-runtimezip) |
 | 3 | A **physical** iPhone. The simulator has no usable camera for liveness |
 | 4 | A license key for your bundle id ([contact us](#contact)). The demo already has one for `com.faceplugin.facerecognition.app` |
 
@@ -74,31 +74,38 @@ This repository is the whole product: the **engine** (`facerecognitionsdk.xcfram
 | Xcode | 15 | Latest release |
 | Camera | Front camera | 1080p |
 
-## Get the library (`facerecognitionsdk.xcframework`)
+## Get the library (`runtime.zip`)
 
-The engine binary is not in git, because it is too large for GitHub.
+The engine binaries are not in git, because they are too large for GitHub. The Release asset is **`runtime.zip`** (not an xcframework zip).
 
-**[Download the engine from Releases](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/releases/tag/latest)**
+**[Download `runtime.zip` from Releases](https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS/releases/tag/latest)**
 
 ```bash
 git clone https://github.com/Faceplugin-ltd/FaceRecognition-LivenessDetection-iOS.git
 cd FaceRecognition-LivenessDetection-iOS
+# Download runtime.zip from the Releases page, then:
+unzip runtime.zip -d Frameworks/
 ```
 
-`Package.swift` resolves the engine from the release attached to this tag, so a normal build needs no manual step.
-
-To build against an engine you already have on disk, put it here and set `FACEPLUGIN_LOCAL_ENGINE=1`:
+After extract, `Frameworks/` (or the paths your Xcode project already references) should contain:
 
 ```text
-FaceRecognition-LivenessDetection-iOS/
-└── Frameworks/
-    └── facerecognitionsdk.xcframework
+facerecognitionsdk.framework
+FacePluginSDK.xcframework
+FacePlugin.xcframework
+FaceDetect.xcframework
 ```
 
-If you only have the older `.framework`, wrap it first:
+Move files up if the zip nests them in a subfolder. The **Xcode demo** (`FaceRecognitionSDK.xcodeproj`) is the supported run path.
+
+### Swift Package Manager
+
+`Package.swift` expects a **local** `Frameworks/facerecognitionsdk.xcframework`. There is no remote binary URL yet — the Release ships `runtime.zip` for the demo. To use SPM, wrap the framework on a Mac:
 
 ```bash
-xcodebuild -create-xcframework -framework facerecognitionsdk.framework -output Frameworks/facerecognitionsdk.xcframework
+xcodebuild -create-xcframework \
+  -framework Frameworks/facerecognitionsdk.framework \
+  -output Frameworks/facerecognitionsdk.xcframework
 ```
 
 ## Run the demo

@@ -1,7 +1,7 @@
 # FaceRecognitionSDK-iOS-App (customer demo)
 # Push: app source, Xcode project, tests, README, screenshots,
 #       facerecognitionsdk.framework header stubs.
-# Do not push: runtime binaries (Drive / SDK export), licenses, build output.
+# Do not push: runtime binaries (Releases / SDK export), licenses, build output.
 
 # --- IDE / local ---
 .DS_Store
@@ -49,3 +49,8 @@ __pycache__/
 source_libraries/
 build_libraries/
 .patch_runtime_state.json
+
+# Extra build / cache
+*.log
+.venv/
+venv/

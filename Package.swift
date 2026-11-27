@@ -1,28 +1,19 @@
 // swift-tools-version: 5.9
 import PackageDescription
-import Foundation
 
-// The engine is a prebuilt binary. Customers get it from the GitHub release attached to this tag;
-// inside this repository, set FACEPLUGIN_LOCAL_ENGINE=1 to build against
-// Frameworks/facerecognitionsdk.xcframework instead, so you can test an engine before releasing it.
+// Supported path for Swift Package users: place a local engine under Frameworks/, then
+// open/resolve this package. The GitHub Release for this repo ships **runtime.zip** for the
+// Xcode demo (facerecognitionsdk.framework + vendor xcframeworks), not a checksummed
+// facerecognitionsdk.xcframework.zip — so there is no remote binaryTarget URL yet.
 //
-// After building a new engine, update both lines below. Get the checksum with:
-//   swift package compute-checksum facerecognitionsdk.xcframework.zip
-let engineVersion = "1.0.0"
-let engineChecksum = "0000000000000000000000000000000000000000000000000000000000000000"
-
-let useLocalEngine = ProcessInfo.processInfo.environment["FACEPLUGIN_LOCAL_ENGINE"] == "1"
-
-let engineTarget: Target = useLocalEngine
-    ? .binaryTarget(
-        name: "FaceRecognitionEngine",
-        path: "Frameworks/facerecognitionsdk.xcframework"
-    )
-    : .binaryTarget(
-        name: "FaceRecognitionEngine",
-        url: "https://github.com/Faceplugin-ltd/Face-Recognition-LivenessDetection-iOS/releases/download/v\(engineVersion)/facerecognitionsdk.xcframework.zip",
-        checksum: engineChecksum
-    )
+// From runtime.zip on a Mac:
+//   unzip runtime.zip -d /tmp/fp-runtime
+//   xcodebuild -create-xcframework \
+//     -framework /tmp/fp-runtime/facerecognitionsdk.framework \
+//     -output Frameworks/facerecognitionsdk.xcframework
+//
+// The FaceRecognitionSDK.xcodeproj demo embeds the unzipped runtime.zip contents directly
+// and does not require this Package.swift binary target.
 
 let package = Package(
     name: "FaceRecognition",
@@ -34,7 +25,10 @@ let package = Package(
         .library(name: "FaceRecognitionCapture", targets: ["FaceRecognitionCapture"]),
     ],
     targets: [
-        engineTarget,
+        .binaryTarget(
+            name: "FaceRecognitionEngine",
+            path: "Frameworks/facerecognitionsdk.xcframework"
+        ),
         .target(
             name: "FaceRecognitionKit",
             dependencies: ["FaceRecognitionEngine"],
